@@ -1,0 +1,21 @@
+{
+    "canisters": {
+        "e_admin_frontend": {
+            "frontend": {
+                "entrypoint": "src/index.html"
+            },
+            "source": [
+                "assets",
+                "dist/e_admin_frontend/"
+            ],
+            "type": "assets"
+        }
+    },
+    "defaults": {
+        "build": {
+        "args": "",
+        "packtool": "mops sources"
+        }
+    },
+    "version": 1
+  }

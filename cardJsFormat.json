@@ -1,0 +1,43 @@
+[
+    {
+        "id":"srd5d-nakor-uwiaa-aaaaa-b4anl-maqca-aaaaa-a",
+        "luck":8,
+        "url":"https://k4qsa-4aaaa-aaaah-qbvnq-cai.raw.ic0.app/tokenid=evgdr-eakor-uwiaa-aaaaa-b4anl-maqca-aaaa5-q",
+        "collection":"Elementum: Faceted Meninas",
+        "mimeType":"image/jpeg",
+        "stats": [
+            {
+                "Traits": [
+                    {
+                        "name": "State",
+                        "value": { "Text": "Floating" }
+                    },
+                    {
+                        "name": "Condition",
+                        "value": { "Text": "Space" }
+                    },
+                    {
+                        "name": "Color",
+                        "value": { "Text": "Nuanced" }
+                    }
+                ]
+            },
+            {
+                "ElementumGeneral": [
+                    {
+                        "name": "Elementum",
+                        "value": { "Array": [ { "Text": "Fire" } ] }
+                    }
+                ]
+            },
+            {
+                "BountyRush": [
+                    {
+                        "name": "Luck",
+                        "value": { "Nat":  18 }
+                    }
+                ]
+            }
+        ]
+    }
+]

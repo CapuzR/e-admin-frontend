@@ -14,10 +14,13 @@ import {
   MenuItem
 } from '@mui/material';
 import { useNavigate, useParams } from "react-router-dom";
-import { canisterId as bRAMId, idlFactory as bRAMIdlFactory } from '../../../declarations/eAssetManager/index.js';
+import { idlFactory as eAIdlFactory } from '../IDLs/e-asset-manager/e_asset_manager.did.js';
+import canisters from '../../canister_ids.json';
 import { getAllNFTS } from '@psychedelic/dab-js';
 import { HttpAgent } from "@dfinity/agent";
 import { Principal } from '@dfinity/principal';
+
+const eAId = process.env.NODE_ENV == "development" ? canisters.e_asset_manager.local : process.env.NODE_ENV == "staging" ? canisters.e_asset_manager.staging : canisters.e_asset_manager.ic;
 
 const network =
   process.env.DFX_NETWORK ||
@@ -72,8 +75,8 @@ export default function CollectionForm() {
 
   const getCollections = async ()=> {
     try {
-      const bRAMActor = await createActor(bRAMId, bRAMIdlFactory);
-      const cardCollectionRes = await bRAMActor.getCardCollection(id);
+      const eAMActor = await createActor(eAId, eAIdlFactory);
+      const cardCollectionRes = await eAMActor.getCardCollection(id);
 
       if ("ok" in cardCollectionRes) {
         console.log(cardCollectionRes);
@@ -117,12 +120,40 @@ export default function CollectionForm() {
     setNftCollectionsArr(collections);
   };
 
+  const getStatsArrays = (card, array)=> {
+    card.stats.map((stat, i)=>{
+      array.push(stat);
+    });
+    return array;
+  };
+
+  const getTraitsArray = (prevArray, array)=> {
+    prevArray[0].Traits.map((stat, i)=>{
+      array.push(stat);
+    });
+    return array;
+  };
+
+  const getElementumGeneralArray = (prevArray, array)=> {
+    prevArray[1].ElementumGeneral.map((stat, i)=>{
+      array.push(stat);
+    });
+    return array;
+  };
+
+  const getBountyRusArray = (prevArray, array)=> {
+    prevArray[2].BountyRush.map((stat, i)=>{
+      array.push(stat);
+    });
+    return array;
+  };
+
   const addNewCollection = async ()=> {
     setLoading(true);
     const rawCards = JSON.parse(cards);
     const cardsArray = [];
-    
-    await rawCards.map((card, index)=> {
+    // await 
+    rawCards.map((card, index)=> {
 
       let thumbUrl = 
         "https://" +
@@ -130,7 +161,16 @@ export default function CollectionForm() {
         ".raw.ic0.app/?tokenid=" +
         card.id +
         "&type=thumbnail";
-            
+        
+        let traitsArray = [];
+        let elementumGeneralArray = [];
+        let bountyRusArray = [];
+        console.log("aja");
+        traitsArray = getTraitsArray(card.stats, traitsArray);
+        console.log("traitsArray", traitsArray);
+        elementumGeneralArray = getElementumGeneralArray(card.stats, elementumGeneralArray);
+        bountyRusArray = getBountyRusArray(card.stats, bountyRusArray);
+
       cardsArray.push({
         id : card.id,
         index : index,
@@ -140,14 +180,24 @@ export default function CollectionForm() {
         collectionName : card.collection,
         collectionId : canisterId,
         mimeType : card.mimeType,
-        action : card.action ? [card.action] : [],
-        target : card.target ? [card.target] : [],
-        amount : card.amount ? [card.amount] : [],
+        stats : [ //vec
+          {
+            Traits: traitsArray
+          },
+          // {
+          //   ElementumGeneral: elementumGeneralArray
+          // },
+          // {
+          //   BountyRush: bountyRusArray
+          // }
+        ]
       });
 
     });
 
-    console.log("cardsArray", cardsArray);
+
+    console.log(cardsArray);
+
 
     const cardsCollection = {
       collectionId: canisterId,
@@ -157,12 +207,93 @@ export default function CollectionForm() {
       loreContext,
       standard,
       haveMultipleAC,
-      batchUpdate: false
+      batchUpdate: false,
+      filters: [
+        {
+          Traits: [
+            {
+              name: "State",
+              kind: {
+                Checkbox: {
+                  options: [
+                    "Floating",
+                    "Spinning",
+                    "Static"
+                  ]
+                }
+              }
+            },
+            {
+              name: "Condition",
+              kind: {
+                Checkbox: {
+                  options: [
+                    "Bounded",
+                    "Space",
+                    "Isolated"
+                  ]
+                }
+              }
+            },
+            {
+              name: "Color",
+              kind: {
+                Checkbox: {
+                  options: [
+                    "Nuanced",
+                    "Unicolor"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          ElementumGeneral: [
+            {
+              name: "Elementum",
+              kind: {
+                Checkbox: {
+                  options: [
+                    "Fire",
+                    "Water",
+                    "Air",
+                    "Earth",
+                    "Psique",
+                    "Vibrum"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          BountyRush: [
+            {
+              name: "Luck",
+              kind: {
+                Range: [
+                  1,
+                  20
+                ]
+              }
+            }
+          ]
+        }
+      ]
     };
 
+    
+
     try {
-      const bRAMActor = await createActor(bRAMId, bRAMIdlFactory);
-      const cardCollections = await bRAMActor.addCardCollection(cardsCollection, cardsArray);
+      const eAMActor = await createActor(eAId, eAIdlFactory);
+      console.log("cardsCollection", cardsCollection);
+      console.log("cardsArray", cardsArray);
+      console.log("eAMActor", eAMActor);
+      const cardCollections = await eAMActor.addCardCollection(cardsCollection, cardsArray);
+      // const cardCollections = await eAMActor.testQueryA(cardsCollection);
+      // const cardCollections = await eAMActor.testQueryB(cardsArray);
+      console.log("lol1");
 
       if ("ok" in cardCollections) {
         setLoading(false);
@@ -174,7 +305,7 @@ export default function CollectionForm() {
     } catch (e) {
       setLoading(false);
       window.alert("Unexpected error. Please try again and report it.");
-      console.log(e);
+      console.log("Unexpected error:", e);
     };
   };
 
@@ -215,12 +346,105 @@ export default function CollectionForm() {
       loreContext,
       standard,
       haveMultipleAC,
-      batchUpdate
+      batchUpdate,
+      filters: [
+        [
+          {
+            Traits: [
+              {
+                name: "State",
+                kind: [
+                  {
+                    Checkbox: [
+                      {
+                        options: [
+                          "Floating",
+                          "Spinning",
+                          "Static"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                name: "Condition",
+                kind: [
+                  {
+                    Checkbox: [
+                      {
+                        options: [
+                          "Bounded",
+                          "Space",
+                          "Isolated"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                name: "Color",
+                kind: [
+                  {
+                    Checkbox: [
+                      {
+                        options: [
+                          "Nuanced",
+                          "Unicolor"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            ElementumGeneral: [
+              {
+                name: "Elementum",
+                kind: [
+                  {
+                    Checkbox: [
+                      {
+                        options: [
+                          "Fire",
+                          "Water",
+                          "Air",
+                          "Earth",
+                          "Psique",
+                          "Vibrum"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            BountyRush: [
+              {
+                name: "Luck",
+                kind: [
+                  {
+                    Range: [
+                      1,
+                      20
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      ]
     };
 
     try {
-      const bRAMActor = await createActor(bRAMId, bRAMIdlFactory);
-      const cardCollections = await bRAMActor.updateCardCollection(cardsCollection, cardsArray);
+      const eAMActor = await createActor(eAId, eAIdlFactory);
+      const cardCollections = await eAMActor.updateCardCollection(cardsCollection, cardsArray);
       
       if ("ok" in cardCollections) {
         setLoading(false);

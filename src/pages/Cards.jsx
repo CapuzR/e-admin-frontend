@@ -6,11 +6,16 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { DataGrid } from '@mui/x-data-grid';
 
 import DeleteIcon from '@mui/icons-material/Delete';
-import { canisterId as bRAMId, idlFactory as bRAMIdlFactory } from '../../../declarations/eAssetManager/index.js';
+
+import canisters from '../../canister_ids.json';
+import { idlFactory as eAIdlFactory } from '../IDLs/e-asset-manager/e_asset_manager.did.js';
+
+
+const eAId = process.env.NODE_ENV == "development" ? canisters.e_asset_manager.local : process.env.NODE_ENV == "staging" ? canisters.e_asset_manager.staging : canisters.e_asset_manager.ic;
 
 const network =
   process.env.DFX_NETWORK ||
@@ -37,7 +42,7 @@ export default function Cards() {
 
   const getCards = async ()=> {
     try {
-      const bRAMActor = await createActor(bRAMId, bRAMIdlFactory);
+      const bRAMActor = await createActor(eAId, eAIdlFactory);
       const cardCollectionRes = await bRAMActor.getCardCollection(id);
       if ("ok" in cardCollectionRes) {
         console.log("CardCollection", cardCollectionRes);
@@ -70,7 +75,7 @@ export default function Cards() {
   const deleteCard = async ()=> {
     try {
       setLoading(true);
-      const bRAMActor = await createActor(bRAMId, bRAMIdlFactory);
+      const bRAMActor = await createActor(eAId, eAIdlFactory);
       const cardRes = await bRAMActor.deleteCard(selectionModel[0]);
 
       if ("ok" in cardRes) {
@@ -143,7 +148,7 @@ export default function Cards() {
         target : newRow.target ? [newRow.target] : [],
         amount : newRow.amount ? [parseInt(newRow.amount)] : [],
       };
-      const bRAMActor = await createActor(bRAMId, bRAMIdlFactory);
+      const bRAMActor = await createActor(eAId, eAIdlFactory);
       const cardRes = await bRAMActor.updateCard(updatedCard);
 
 

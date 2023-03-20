@@ -3,11 +3,13 @@ import { useEffect, useState } from 'react';
 import { Grid, Button, Typography, CircularProgress, Backdrop, Tooltip } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import { DataGrid } from '@mui/x-data-grid';
-import { canisterId as eTId, idlFactory as eTIDLFactory } from '../../../declarations/eTournamentManager/index.js';
+import canisters from '../../canister_ids.json';
+import { idlFactory as eTIdlFactory } from '../IDLs/e-tournament-manager/e_tournament_manager.did.js';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import FilterIcon from '@mui/icons-material/Filter';
+
+const eTId = process.env.NODE_ENV == "development" ? canisters.e_tournament_manager.local : process.env.NODE_ENV == "staging" ? canisters.e_tournament_manager.staging : canisters.e_tournament_manager.ic;
 
 const network =
   process.env.DFX_NETWORK ||
@@ -42,7 +44,7 @@ export default function Tournaments() {
     try {
       console.log("gT");
       console.log("eTId", eTId);
-      const eTActor = await createActor(eTId, eTIDLFactory);
+      const eTActor = await createActor(eTId, eTIdlFactory);
       console.log("eTActor", eTActor);
       const tournamentsRes = await eTActor.getAllTournaments();
       console.log("tournamentsRes", tournamentsRes);
@@ -61,7 +63,7 @@ export default function Tournaments() {
 
   const deleteTournament = async ()=> {
     try {
-      const bRAMActor = await createActor(eTId, eTIDLFactory);
+      const bRAMActor = await createActor(eTId, eTIdlFactory);
       const tournaments = await bRAMActor.deleteTournament(selectionModel[0]);
       if ("ok" in tournaments) {
         location.reload();

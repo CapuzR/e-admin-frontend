@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react';
 import { Grid, Button, Typography, CircularProgress, Backdrop, TextField } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import { DataGrid } from '@mui/x-data-grid';
-import canisters from '../../../../canister_ids.json';
-import { idlFactory as eAIdlFactory } from '../../../declarations/eAssetManager/index.js';
+import canisters from '../../canister_ids.json';
+import { idlFactory as eAIdlFactory } from '../IDLs/e-asset-manager/e_asset_manager.did.js';
+
+import { useCanister, ConnectButton, useConnect } from "@connect2ic/react";
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -14,9 +16,7 @@ const network =
   process.env.DFX_NETWORK ||
   (process.env.NODE_ENV === "production" ? "ic" : "local");
 const host = network != "ic" ? "http://localhost:4943" : "https://mainnet.dfinity.network";
-const eAId = process.env.NODE_ENV == "development" ? canisters.eAssetManager.local : process.env.NODE_ENV == "staging" ? canisters.eAssetManager.staging : canisters.eAssetManager.ic;
-const eTId = process.env.NODE_ENV == "development" ? canisters.eTournamentManager.local : process.env.NODE_ENV == "staging" ? canisters.eTournamentManager.staging : canisters.eTournamentManager.ic;
-    console.log(eAId);
+const eAId = process.env.NODE_ENV == "development" ? canisters.e_asset_manager.local : process.env.NODE_ENV == "staging" ? canisters.e_asset_manager.staging : canisters.e_asset_manager.ic;
 const whitelist = [];
 
 export default function Collections() {
@@ -26,6 +26,7 @@ export default function Collections() {
   const [selectionModel, setSelectionModel] = useState([]);
   const [ cardColls, setCardColls ] = useState([]);
   const [ search, setSearch ] = useState("");
+  // const [assets] = useCanister("assets");
 
   const createActor = async (id, idl)=> {
     console.log(host);
@@ -128,6 +129,9 @@ export default function Collections() {
   
   useEffect(() => {
     setLoading(true);
+    // if (!asse) {
+    //   return
+    // }
     verifyConnectionAndAgent();
     getCollections();
   }, []);

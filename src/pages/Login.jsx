@@ -1,4 +1,3 @@
-import PlugConnect from '@psychedelic/plug-connect';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -8,12 +7,15 @@ import { Typography } from "@mui/material";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from "react-router-dom";
+import canisters from '../../canister_ids.json';
 
 const network =
   process.env.DFX_NETWORK ||
   (process.env.NODE_ENV === "production" ? "ic" : "local");
 const host = network != "ic" ? "http://localhost:4943" : "https://mainnet.dfinity.network";
-const whitelist = [];
+const eAId = process.env.NODE_ENV == "development" ? canisters.e_asset_manager.local : process.env.NODE_ENV == "staging" ? canisters.e_asset_manager.staging : canisters.e_asset_manager.ic;
+const eTId = process.env.NODE_ENV == "development" ? canisters.e_tournament_manager.local : process.env.NODE_ENV == "staging" ? canisters.e_tournament_manager.staging : canisters.e_tournament_manager.ic;
+const whitelist = [eAId, eTId];
 
 export default function Login() {
   const navigate = useNavigate();
@@ -21,15 +23,18 @@ export default function Login() {
   const [ connected, setConnected ] = useState(false);
   const [ loading, setLoading ] = useState(false);
 
-  const createActor = async (id, idl)=> { 
-    return await window.ic.plug.createActor({
-      canisterId: id,
-      interfaceFactory: idl,
-    })
+  const onConnectionUpdate = () => {
+    console.log(window.ic.plug.sessionManager.sessionData)
   };
 
-  const handleChange = (event) => {
-    setToken(event.target.value);
+  const handleConnection = async () => {
+    await window.ic.plug.requestConnect({
+      whitelist,
+      host,
+      onConnectionUpdate,
+      timeout: 50000
+    });
+    navigate("/collections");
   };
 
   const verifyConnectionAndAgent = async () => {
@@ -71,19 +76,7 @@ export default function Login() {
             </Grid>
             <Grid item xs={12} md={6} textAlign="center">
               <Grid item xs={12} textAlign="center">
-                <a onClick={()=>{ setLoading(true); }}>
-                <PlugConnect
-                  title="Connect"
-                  whitelist={whitelist}
-                  onConnectCallback={() => {
-                    setConnected(true); 
-                    setLoading(false); 
-                    navigate("/collections");
-                  }}
-                  host={host}
-                  dark
-                />
-                </a>
+                <Button onClick={()=>{ handleConnection() }}>Connect</Button>
               </Grid>
             </Grid>
             <Grid item xs={3} textAlign="center">

@@ -19,12 +19,16 @@ import {
   MenuItem
 } from '@mui/material';
 import { useNavigate, useParams } from "react-router-dom";
-import { canisterId as eTId, idlFactory as eTIDLFactory } from '../../../declarations/eTournamentManager/index.js';
-import { canisterId as eAId, idlFactory as eAIdlFactory } from '../../../declarations/eAssetManager/index.js';
+import { idlFactory as eAIdlFactory } from '../IDLs/e-asset-manager/e_asset_manager.did.js';
+import  { idlFactory as eTIdlFactory }  from '../IDLs/e-tournament-manager/e_tournament_manager.did.js';
+import canisters from '../../canister_ids.json';
 import { boostsSetAtArr, boostsSetPerArr, statusArr } from '../selects.js';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+
+const eAId = process.env.NODE_ENV == "development" ? canisters.e_asset_manager.local : process.env.NODE_ENV == "staging" ? canisters.e_asset_manager.staging : canisters.e_asset_manager.ic;
+const eTId = process.env.NODE_ENV == "development" ? canisters.e_tournament_manager.local : process.env.NODE_ENV == "staging" ? canisters.e_tournament_manager.staging : canisters.e_tournament_manager.ic;
 
 const network =
   process.env.DFX_NETWORK ||
@@ -122,7 +126,7 @@ export default function TournamentForm() {
 
   const getTournament = async ()=> {
     try {
-      const eTActor = await createActor(eTId, eTIDLFactory);
+      const eTActor = await createActor(eTId, eTIdlFactory);
       const tournamentRes = await eTActor.getTournament(id);
 
       if ("ok" in tournamentRes) {
@@ -140,8 +144,6 @@ export default function TournamentForm() {
         setGame(tournamentRes.ok.game);
         setDynamicExplanation(tournamentRes.ok.dynamicExplanation);
         setLoading(false);
-
-        console.log("stat", status);
         
       } else {
         window.alert("Error. Please refresh and report it.");
@@ -233,7 +235,7 @@ export default function TournamentForm() {
     };
 
     try {
-      const eTActor = await createActor(eTId, eTIDLFactory);
+      const eTActor = await createActor(eTId, eTIdlFactory);
       const tournamentRes = await eTActor.addTournament(tournament);
 
       if ("ok" in tournamentRes) {
@@ -268,7 +270,7 @@ export default function TournamentForm() {
       dynamicExplanation
     };
     try {
-      const eTActor = await createActor(eTId, eTIDLFactory);
+      const eTActor = await createActor(eTId, eTIdlFactory);
       const tournamentRes = await eTActor.updateTournament(tournament, tournamentId);
       
       if ("ok" in tournamentRes) {

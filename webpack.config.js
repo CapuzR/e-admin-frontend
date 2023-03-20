@@ -38,9 +38,9 @@ const canisterEnvVariables = initCanisterEnv();
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
-const frontendDirectory = "eAdminFe";
+const frontendDirectory = "e_admin_frontend";
 
-const frontend_entry = path.join("src", frontendDirectory, "src", "index.html");
+const frontend_entry = path.join("src", "index.html");
 
 module.exports = {
   target: "web",
@@ -114,9 +114,9 @@ module.exports = {
         },
       },
     },
-    static: path.resolve(__dirname, "src", frontendDirectory, "assets"),
+    static: path.resolve(__dirname, frontendDirectory, "assets"),
     hot: true,
-    watchFiles: [path.resolve(__dirname, "src", frontendDirectory)],
+    watchFiles: [path.resolve(__dirname, frontendDirectory)],
     liveReload: true,
   },
 };

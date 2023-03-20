@@ -13,7 +13,7 @@
     "prebuild": "npm run generate",
     "start": "webpack serve --mode development --env development",
     "prestart": "npm run generate",
-    "generate": "dfx generate eAssetManager; dfx generate eTournamentManager"
+    "generate": "dfx generate e_admin_frontend"
   },
   "devDependencies": {
     "@dfinity/agent": "0.14.0",
@@ -43,6 +43,8 @@
     "last 2 edge version"
   ],
   "dependencies": {
+    "@connect2ic/core": "^0.2.0-beta.5",
+    "@connect2ic/react": "^0.2.0-beta.5",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@mui/icons-material": "^5.10.9",
@@ -50,7 +52,7 @@
     "@mui/x-data-grid": "^5.17.10",
     "@mui/x-date-pickers": "^5.0.8",
     "@psychedelic/dab-js": "^1.6.0-alpha.2",
-    "@psychedelic/plug-connect": "^0.1.4",
+    "@psychedelic/plug-connect": "^0.2.0",
     "dayjs": "^1.11.6",
     "file-loader": "^6.2.0",
     "react": "^18.2.0",
