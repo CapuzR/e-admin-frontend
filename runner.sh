@@ -2,6 +2,11 @@ E_ADMIN_FRONTEND_PATH=$ELEMENTUM_PATH"/general/e-admin-frontend"
 
 cd $E_ADMIN_FRONTEND_PATH
 
+if [ ! -d "./node_modules" ]
+then
+    npm install
+fi
+
 if [ $E_ADMIN_FRONTEND_ENV = "local" ] 
 then
     dfx canister create e_admin_frontend >/dev/null
