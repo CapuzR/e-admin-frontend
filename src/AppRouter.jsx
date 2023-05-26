@@ -14,6 +14,8 @@ import Cards from "./pages/Cards.jsx";
 
 import Tournaments from "./pages/Tournaments.jsx";
 import TournamentForm from "./pages/TournamentForm.jsx";
+import AllowListRead from "./pages/allowList/AllowListRead";
+import AllowListAdd from "./pages/allowList/AllowListAdd";
 
 
 export const AppRouter = ({ isMobile }) => {
@@ -33,6 +35,11 @@ export const AppRouter = ({ isMobile }) => {
         <Route path="/tournaments" element={<><AppBar location="Tournaments" /><Tournaments isMobile={isMobile} /></>} />
         <Route path="/tournament/new" element={<><AppBar location="New Tournament" /><TournamentForm isMobile={isMobile} /></>} />
         <Route path="/tournament/:id/update" element={<><AppBar location="Update Tournament" /><TournamentForm isMobile={isMobile} /></>} />
+      
+        {/* AllowList Manager */}
+        <Route path="/allow-list" element={<><AppBar location="Allow List"></AppBar><AllowListRead/></>}></Route>
+        <Route path="/allow-list/add" element={<><AppBar location="Add principal"></AppBar><AllowListAdd/></>}></Route>
+      
       </Routes>
     </Router>
   );
