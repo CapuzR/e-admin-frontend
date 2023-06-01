@@ -85,16 +85,23 @@ export default function AllowListAdd() {
                 {
                     error.value ? 
                     <Box >
-                    <TextField error multiline fullWidth={true} label="Error" color="error" helperText={error.message} onChange={(a) => {
+                        <Box sx={{display: 'flex', alignItems: 'center' }}>
+                    <TextField  error multiline fullWidth={true} label="Error" color="error" helperText={error.message} onChange={(a) => {
                         transformPpal(a.target.value);
                     }} variant="outlined" />
+                      <Tooltip  title="Se debe agregar la lista de principals seguidos de comas y sin espacios. Por ejemplo:
+                    `<principalID>,<principalID>,<principalID>`" color="error">
+                                        <ErrorOutlineIcon>
+                                        </ErrorOutlineIcon>
+                                        </Tooltip>
+                    </Box>
                         <Button sx={{width: '100%', marginTop: 2}}  disabled>
                             Add
                         </Button>
                     </Box>
                     :
                     <Box >
-                        <Box sx={{display: 'flex', alignItems: 'center', }}>
+                        <Box sx={{display: 'flex', alignItems: 'center' }}>
                 <TextField fullWidth={true} multiline label={error.message} onChange={(a) => {
                     transformPpal(a.target.value);
                 }} variant="outlined" />
