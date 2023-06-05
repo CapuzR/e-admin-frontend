@@ -1,17 +1,36 @@
-type anon_class_13_1 = 
+type anon_class_18_1 = 
  service {
+   addAsset: (AssetRequest) -> (Result_7);
    addCardCollection: (CardCollectionArgs, vec CardArgs) -> (Result);
-   addNewAdmin: (vec principal) -> (Result_6);
-   deleteCard: (text) -> (Result_5);
+   deleteCard: (text) -> (Result_6);
    deleteCardCollection: (text) -> (Result);
-   getAllCollections: () -> (Result_2) query;
-   getCard: (CardArgs) -> (Result_4) query;
-   getCardCollection: (text) -> (Result_3) query;
-   getCollectionsByQuery: (text) -> (Result_2) query;
+   getAllCollections: () -> (Result_3) query;
+   getCard: (CardArgs) -> (Result_5) query;
+   getCardCollection: (text) -> (Result_4) query;
+   getCollectionsByQuery: (text) -> (Result_3) query;
+   http_request: (Request) -> (Response) query;
+   http_request_streaming_callback: (StreamingCallbackToken) ->
+    (StreamingCallbackResponse) query;
+   manageAuth: (AuthArgs) -> (Result_2);
+   staticStreamingCallback: (StreamingCallbackToken) ->
+    (StreamingCallbackResponse) query;
    testQueryA: (CardCollectionArgs) -> ();
    testQueryB: (vec CardArgs) -> ();
    updateCard: (CardArgs) -> (Result_1);
    updateCardCollection: (CardCollectionArgs, vec CardArgs) -> (Result);
+ };
+type WriteAsset = 
+ variant {
+   Chunk: record {
+            callback: opt Callback;
+            chunk: blob;
+            id: text;
+          };
+   Init: record {
+           callback: opt Callback;
+           id: text;
+           size: nat;
+         };
  };
 type Value__1 = 
  variant {
@@ -63,30 +82,65 @@ type UpdateCardError =
    NotAuthorized;
    Unknown: text;
  };
+type StreamingStrategy = variant {
+                           Callback:
+                            record {
+                              callback: StreamingCallback;
+                              token: StreamingCallbackToken;
+                            };};
+type StreamingCallbackToken = 
+ record {
+   content_encoding: text;
+   index: nat;
+   key: text;
+ };
+type StreamingCallbackResponse = 
+ record {
+   body: blob;
+   token: opt StreamingCallbackToken;
+ };
+type StreamingCallback = func (StreamingCallbackToken) ->
+                          (StreamingCallbackResponse) query;
+type StaticError = 
+ variant {
+   AlreadyExists;
+   AuthorizedPrincipalLimitReached: nat;
+   FailedToWrite: text;
+   Immutable;
+   InvalidRequest;
+   NotAuthorized;
+   NotFound;
+   Unauthorized;
+ };
+type Result_7 = 
+ variant {
+   err: StaticError;
+   ok;
+ };
 type Result_6 = 
  variant {
-   err: Error;
+   err: CardError;
    ok;
  };
 type Result_5 = 
  variant {
    err: CardError;
-   ok;
- };
-type Result_4 = 
- variant {
-   err: CardError;
    ok: Card;
  };
-type Result_3 = 
+type Result_4 = 
  variant {
    err: CardCollectionError;
    ok: CardCollectionSuccess;
  };
-type Result_2 = 
+type Result_3 = 
  variant {
    err: CardCollectionError;
    ok: vec CardCollectionSuccess;
+ };
+type Result_2 = 
+ variant {
+   err: Error;
+   ok: opt vec principal;
  };
 type Result_1 = 
  variant {
@@ -98,6 +152,29 @@ type Result =
    err: CardCollectionError;
    ok;
  };
+type Response = 
+ record {
+   body: blob;
+   headers: vec HeaderField;
+   status_code: nat16;
+   streaming_strategy: opt StreamingStrategy;
+ };
+type RequestArgs = 
+ variant {
+   Add: vec principal;
+   GetAll;
+   IsCallerIn;
+   IsIn: principal;
+   Remove: principal;
+   RemoveAll;
+ };
+type Request = 
+ record {
+   body: blob;
+   headers: vec HeaderField;
+   method: text;
+   url: text;
+ };
 type Property__1 = 
  record {
    name: text;
@@ -108,7 +185,19 @@ type Property =
    name: text;
    value: Value;
  };
-type InitOptions = record {admins: vec principal;};
+type InitArgs = 
+ record {
+   admins: opt vec principal;
+   allowedUsers: opt vec principal;
+   auth: opt vec principal;
+   environment: text;
+   gameServers: opt vec principal;
+ };
+type HeaderField = 
+ record {
+   text;
+   text;
+ };
 type FilterDetails = 
  record {
    kind: FieldType;
@@ -126,7 +215,11 @@ type FieldType =
    Range: vec nat;
    TextField: text;
  };
-type Error = variant {NotAuthorized;};
+type Error = 
+ variant {
+   NonExistentRole;
+   NotAuthorized;
+ };
 type Checkbox = record {options: vec text;};
 type CardSuccess = 
  record {
@@ -209,4 +302,30 @@ type Card =
    thumbnail: text;
    url: text;
  };
-service : (InitOptions) -> anon_class_13_1
+type Callback = func () -> ();
+type AuthArgs = 
+ variant {
+   Admin: RequestArgs;
+   AllowedUsers: RequestArgs;
+   Auth: RequestArgs;
+   GameServers: RequestArgs;
+ };
+type AssetRequest = 
+ variant {
+   Put:
+    record {
+      callback: opt Callback;
+      contentType: text;
+      key: text;
+      payload: variant {
+                 Payload: blob;
+                 StagedData;
+               };
+    };
+   Remove: record {
+             callback: opt Callback;
+             key: text;
+           };
+   StagedWrite: WriteAsset;
+ };
+service : (InitArgs) -> anon_class_18_1

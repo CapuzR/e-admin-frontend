@@ -95,7 +95,7 @@ module.exports = {
       cache: false,
     }),
     new webpack.EnvironmentPlugin({
-      NODE_ENV: "development",
+      NODE_ENV: "ic",
       ...canisterEnvVariables,
     }),
     new webpack.ProvidePlugin({

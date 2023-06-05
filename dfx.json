@@ -11,6 +11,14 @@
             "type": "assets"
         }
     },
+    "networks": {
+      "staging": {
+        "providers": [
+            "https://ic0.app"
+        ],
+        "type": "persistent"
+    }
+    },
     "defaults": {
         "build": {
         "args": "",

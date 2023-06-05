@@ -24,16 +24,21 @@ import  { idlFactory as eTIdlFactory }  from '../IDLs/e-tournament-manager/e_tou
 import canisters from '../../canister_ids.json';
 import { boostsSetAtArr, boostsSetPerArr, statusArr } from '../selects.js';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import moment from 'moment';
 
 const eAId = process.env.NODE_ENV == "development" ? canisters.e_asset_manager.local : process.env.NODE_ENV == "staging" ? canisters.e_asset_manager.staging : canisters.e_asset_manager.ic;
 const eTId = process.env.NODE_ENV == "development" ? canisters.e_tournament_manager.local : process.env.NODE_ENV == "staging" ? canisters.e_tournament_manager.staging : canisters.e_tournament_manager.ic;
 
-const network =
-  process.env.DFX_NETWORK ||
-  (process.env.NODE_ENV === "production" ? "ic" : "local");
-  const host = network != "ic" ? "http://localhost:4943" : "https://mainnet.dfinity.network";
+const host =
+process.env.NODE_ENV == "development"
+  ? "http://localhost:4943"
+  : process.env.NODE_ENV == "staging"
+  ? "https://icp0.io"
+  : "https://icp0.io";
+  
   const whitelist = [];
 
 
@@ -55,6 +60,8 @@ export default function TournamentForm() {
   const [ description, setDescription ] = useState('');
   const [ startDate, setStartDate ] = useState('');
   const [ endDate, setEndDate ] = useState('');
+  const [ uStartDate, setUStartDate ] = useState('');
+  const [ uEndDate, setUEndDate ] = useState('');
   const [ internalCollections, setinternalCollections ] = useState([]);
   const [ externalCollections, setexternalCollections ] = useState([]);
   const [ boostsSetAt, setBoostsSetAt ] = useState('');
@@ -215,6 +222,21 @@ export default function TournamentForm() {
     setStatus(event.target.value);
   }
 
+  const handleSDateChange = (date) => {
+    setStartDate(date);
+    const unixTimestamp = moment.utc(date.toString()).unix();
+    setUStartDate(unixTimestamp);
+  };
+  const handleEDateChange = (date) => {
+    setEndDate(date);
+    const unixTimestamp = moment.utc(date.toString()).unix();
+    setUEndDate(unixTimestamp);
+  };
+
+  // console.log("startDate Date", (new Date (startDate.toString())));
+  // console.log("Date", startDate);
+  // console.log("startDate Raw", moment.utc(moment.utc(startDate).format()).unix());
+  // console.log("toDate", startDate.toDate());
   const addNewTournament = async ()=> {
     setLoading(true);
 
@@ -224,8 +246,10 @@ export default function TournamentForm() {
       status: JSON.parse(status),
       points, 
       reward,
-      startDate: startDate.toString(),
-      endDate: endDate.toString(),
+      // startDate: startDate.toString(),
+      // endDate: endDate.toString(),
+      startDate: moment(uStartDate).format("x"),
+      endDate: moment(uEndDate).format("x"),
       internalCollections,
       externalCollections,
       boostsSetAt,
@@ -233,10 +257,11 @@ export default function TournamentForm() {
       game,
       dynamicExplanation
     };
-
+    
     try {
       const eTActor = await createActor(eTId, eTIdlFactory);
       const tournamentRes = await eTActor.addTournament(tournament);
+      console.log("tournamentRes", tournamentRes);
 
       if ("ok" in tournamentRes) {
         setLoading(false);
@@ -323,22 +348,22 @@ export default function TournamentForm() {
                   </Grid>
                   <Grid item xs={3}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DesktopDatePicker
+                      <DateTimePicker
                         label="Start Date"
-                        inputFormat="DD/MM/YYYY"
+                        inputFormat="MM/DD/YYYY hh:mm:ss a"
                         value={startDate}
-                        onChange={(e)=>{setStartDate(e)}}
+                        onChange={(e)=>{handleSDateChange(e)}}
                         renderInput={(params) => <TextField {...params} />}
                       />
                     </LocalizationProvider>
                   </Grid>
                   <Grid item xs={3}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DesktopDatePicker
+                      <DateTimePicker
                         label="End Date"
-                        inputFormat="DD/MM/YYYY"
+                        inputFormat="MM/DD/YYYY hh:mm:ss a"
                         value={endDate}
-                        onChange={(e)=>{setEndDate(e)}}
+                        onChange={(e)=>{handleEDateChange(e)}}
                         renderInput={(params) => <TextField {...params} />}
                       />
                     </LocalizationProvider>

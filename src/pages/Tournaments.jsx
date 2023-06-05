@@ -8,16 +8,21 @@ import { idlFactory as eTIdlFactory } from '../IDLs/e-tournament-manager/e_tourn
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import CloseIcon from '@mui/icons-material/Close';
 
 const eTId = process.env.NODE_ENV == "development" ? canisters.e_tournament_manager.local : process.env.NODE_ENV == "staging" ? canisters.e_tournament_manager.staging : canisters.e_tournament_manager.ic;
 
-const network =
-  process.env.DFX_NETWORK ||
-  (process.env.NODE_ENV === "production" ? "ic" : "local");
-const host = network != "ic" ? "http://localhost:4943" : "https://mainnet.dfinity.network";
+const host =
+process.env.NODE_ENV == "development"
+  ? "http://localhost:4943"
+  : process.env.NODE_ENV == "staging"
+  ? "https://icp0.io"
+  : "https://icp0.io";
+  
 const whitelist = [ eTId ];
 
 export default function Tournaments() {
+  
   const navigate = useNavigate();
   const [ connected, setConnected ] = useState(false);
   const [ loading, setLoading ] = useState(false);
@@ -65,6 +70,20 @@ export default function Tournaments() {
     try {
       const bRAMActor = await createActor(eTId, eTIdlFactory);
       const tournaments = await bRAMActor.deleteTournament(selectionModel[0]);
+      if ("ok" in tournaments) {
+        location.reload();
+      } else {
+        window.alert("Fail. Try again and report it.");
+      };
+    } catch (e) {
+      window.alert("Unexpected error. Please try again and report it.");
+    };
+  };
+  
+  const closeTournament = async ()=> {
+    try {
+      const bRAMActor = await createActor(eTId, eTIdlFactory);
+      const tournaments = await bRAMActor.endTournament(selectionModel[0]);
       if ("ok" in tournaments) {
         location.reload();
       } else {
@@ -218,6 +237,13 @@ const columns = [
                             deleteTournament();
                         }}>
                             <DeleteIcon/>
+                        </Button>
+                    </Grid>
+                    <Grid item>
+                        <Button onClick={()=>{
+                            closeTournament();
+                        }}>
+                            <CloseIcon/>
                         </Button>
                     </Grid>
               </Grid>

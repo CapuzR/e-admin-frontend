@@ -11,6 +11,7 @@ import Login from "./pages/Login.jsx";
 import Collections from "./pages/Collections.jsx";
 import CollectionForm from "./pages/CollectionForm.jsx";
 import Cards from "./pages/Cards.jsx";
+import PromoAssets from "./pages/PromoAssets.jsx";
 
 import Tournaments from "./pages/Tournaments.jsx";
 import TournamentForm from "./pages/TournamentForm.jsx";
@@ -33,6 +34,9 @@ export const AppRouter = ({ isMobile }) => {
         <Route path="/tournaments" element={<><AppBar location="Tournaments" /><Tournaments isMobile={isMobile} /></>} />
         <Route path="/tournament/new" element={<><AppBar location="New Tournament" /><TournamentForm isMobile={isMobile} /></>} />
         <Route path="/tournament/:id/update" element={<><AppBar location="Update Tournament" /><TournamentForm isMobile={isMobile} /></>} />
+
+        {/* Random Assets */}
+        <Route path="/assets" element={<><AppBar location="PromoAssets" /><PromoAssets isMobile={isMobile} /></>} />
       </Routes>
     </Router>
   );

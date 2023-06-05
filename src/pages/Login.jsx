@@ -9,10 +9,13 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from "react-router-dom";
 import canisters from '../../canister_ids.json';
 
-const network =
-  process.env.DFX_NETWORK ||
-  (process.env.NODE_ENV === "production" ? "ic" : "local");
-const host = network != "ic" ? "http://localhost:4943" : "https://mainnet.dfinity.network";
+const host =
+process.env.NODE_ENV == "development"
+  ? "http://localhost:4943"
+  : process.env.NODE_ENV == "staging"
+  ? "https://icp0.io"
+  : "https://icp0.io";
+  
 const eAId = process.env.NODE_ENV == "development" ? canisters.e_asset_manager.local : process.env.NODE_ENV == "staging" ? canisters.e_asset_manager.staging : canisters.e_asset_manager.ic;
 const eTId = process.env.NODE_ENV == "development" ? canisters.e_tournament_manager.local : process.env.NODE_ENV == "staging" ? canisters.e_tournament_manager.staging : canisters.e_tournament_manager.ic;
 const whitelist = [eAId, eTId];

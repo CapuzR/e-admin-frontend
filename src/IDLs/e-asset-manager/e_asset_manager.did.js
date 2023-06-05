@@ -3,7 +3,50 @@ export const idlFactory = ({ IDL }) => {
   const Property__1 = IDL.Rec();
   const Value = IDL.Rec();
   const Value__1 = IDL.Rec();
-  const InitOptions = IDL.Record({ 'admins' : IDL.Vec(IDL.Principal) });
+  const InitArgs = IDL.Record({
+    'allowedUsers' : IDL.Opt(IDL.Vec(IDL.Principal)),
+    'auth' : IDL.Opt(IDL.Vec(IDL.Principal)),
+    'admins' : IDL.Opt(IDL.Vec(IDL.Principal)),
+    'environment' : IDL.Text,
+    'gameServers' : IDL.Opt(IDL.Vec(IDL.Principal)),
+  });
+  const Callback = IDL.Func([], [], []);
+  const WriteAsset = IDL.Variant({
+    'Init' : IDL.Record({
+      'id' : IDL.Text,
+      'size' : IDL.Nat,
+      'callback' : IDL.Opt(Callback),
+    }),
+    'Chunk' : IDL.Record({
+      'id' : IDL.Text,
+      'chunk' : IDL.Vec(IDL.Nat8),
+      'callback' : IDL.Opt(Callback),
+    }),
+  });
+  const AssetRequest = IDL.Variant({
+    'Put' : IDL.Record({
+      'key' : IDL.Text,
+      'contentType' : IDL.Text,
+      'callback' : IDL.Opt(Callback),
+      'payload' : IDL.Variant({
+        'StagedData' : IDL.Null,
+        'Payload' : IDL.Vec(IDL.Nat8),
+      }),
+    }),
+    'Remove' : IDL.Record({ 'key' : IDL.Text, 'callback' : IDL.Opt(Callback) }),
+    'StagedWrite' : WriteAsset,
+  });
+  const StaticError = IDL.Variant({
+    'Immutable' : IDL.Null,
+    'NotFound' : IDL.Null,
+    'NotAuthorized' : IDL.Null,
+    'Unauthorized' : IDL.Null,
+    'AlreadyExists' : IDL.Null,
+    'InvalidRequest' : IDL.Null,
+    'AuthorizedPrincipalLimitReached' : IDL.Nat,
+    'FailedToWrite' : IDL.Text,
+  });
+  const Result_7 = IDL.Variant({ 'ok' : IDL.Null, 'err' : StaticError });
   const Checkbox = IDL.Record({ 'options' : IDL.Vec(IDL.Text) });
   const FieldType = IDL.Variant({
     'TextField' : IDL.Text,
@@ -73,15 +116,13 @@ export const idlFactory = ({ IDL }) => {
     'NonExistentCardCollection' : IDL.Null,
   });
   const Result = IDL.Variant({ 'ok' : IDL.Null, 'err' : CardCollectionError });
-  const Error = IDL.Variant({ 'NotAuthorized' : IDL.Null });
-  const Result_6 = IDL.Variant({ 'ok' : IDL.Null, 'err' : Error });
   const CardError = IDL.Variant({
     'NotAuthorized' : IDL.Null,
     'Unknown' : IDL.Text,
     'CardAlreadyExists' : IDL.Null,
     'NonExistentCard' : IDL.Null,
   });
-  const Result_5 = IDL.Variant({ 'ok' : IDL.Null, 'err' : CardError });
+  const Result_6 = IDL.Variant({ 'ok' : IDL.Null, 'err' : CardError });
   const CardSuccess = IDL.Record({
     'id' : IDL.Text,
     'url' : IDL.Text,
@@ -102,7 +143,7 @@ export const idlFactory = ({ IDL }) => {
     'haveMultipleAC' : IDL.Bool,
     'standard' : IDL.Text,
   });
-  const Result_2 = IDL.Variant({
+  const Result_3 = IDL.Variant({
     'ok' : IDL.Vec(CardCollectionSuccess),
     'err' : CardCollectionError,
   });
@@ -144,10 +185,65 @@ export const idlFactory = ({ IDL }) => {
     'index' : IDL.Nat,
     'collectionName' : IDL.Text,
   });
-  const Result_4 = IDL.Variant({ 'ok' : Card, 'err' : CardError });
-  const Result_3 = IDL.Variant({
+  const Result_5 = IDL.Variant({ 'ok' : Card, 'err' : CardError });
+  const Result_4 = IDL.Variant({
     'ok' : CardCollectionSuccess,
     'err' : CardCollectionError,
+  });
+  const HeaderField = IDL.Tuple(IDL.Text, IDL.Text);
+  const Request = IDL.Record({
+    'url' : IDL.Text,
+    'method' : IDL.Text,
+    'body' : IDL.Vec(IDL.Nat8),
+    'headers' : IDL.Vec(HeaderField),
+  });
+  const StreamingCallbackToken = IDL.Record({
+    'key' : IDL.Text,
+    'index' : IDL.Nat,
+    'content_encoding' : IDL.Text,
+  });
+  const StreamingCallbackResponse = IDL.Record({
+    'token' : IDL.Opt(StreamingCallbackToken),
+    'body' : IDL.Vec(IDL.Nat8),
+  });
+  const StreamingCallback = IDL.Func(
+      [StreamingCallbackToken],
+      [StreamingCallbackResponse],
+      ['query'],
+    );
+  const StreamingStrategy = IDL.Variant({
+    'Callback' : IDL.Record({
+      'token' : StreamingCallbackToken,
+      'callback' : StreamingCallback,
+    }),
+  });
+  const Response = IDL.Record({
+    'body' : IDL.Vec(IDL.Nat8),
+    'headers' : IDL.Vec(HeaderField),
+    'streaming_strategy' : IDL.Opt(StreamingStrategy),
+    'status_code' : IDL.Nat16,
+  });
+  const RequestArgs = IDL.Variant({
+    'Add' : IDL.Vec(IDL.Principal),
+    'IsIn' : IDL.Principal,
+    'Remove' : IDL.Principal,
+    'RemoveAll' : IDL.Null,
+    'GetAll' : IDL.Null,
+    'IsCallerIn' : IDL.Null,
+  });
+  const AuthArgs = IDL.Variant({
+    'Auth' : RequestArgs,
+    'Admin' : RequestArgs,
+    'GameServers' : RequestArgs,
+    'AllowedUsers' : RequestArgs,
+  });
+  const Error = IDL.Variant({
+    'NotAuthorized' : IDL.Null,
+    'NonExistentRole' : IDL.Null,
+  });
+  const Result_2 = IDL.Variant({
+    'ok' : IDL.Opt(IDL.Vec(IDL.Principal)),
+    'err' : Error,
   });
   const UpdateCardError = IDL.Variant({
     'NotAuthorized' : IDL.Null,
@@ -155,19 +251,31 @@ export const idlFactory = ({ IDL }) => {
     'NonExistentCard' : IDL.Null,
   });
   const Result_1 = IDL.Variant({ 'ok' : IDL.Null, 'err' : UpdateCardError });
-  const anon_class_13_1 = IDL.Service({
+  const anon_class_18_1 = IDL.Service({
+    'addAsset' : IDL.Func([AssetRequest], [Result_7], []),
     'addCardCollection' : IDL.Func(
         [CardCollectionArgs, IDL.Vec(CardArgs)],
         [Result],
         [],
       ),
-    'addNewAdmin' : IDL.Func([IDL.Vec(IDL.Principal)], [Result_6], []),
-    'deleteCard' : IDL.Func([IDL.Text], [Result_5], []),
+    'deleteCard' : IDL.Func([IDL.Text], [Result_6], []),
     'deleteCardCollection' : IDL.Func([IDL.Text], [Result], []),
-    'getAllCollections' : IDL.Func([], [Result_2], ['query']),
-    'getCard' : IDL.Func([CardArgs], [Result_4], ['query']),
-    'getCardCollection' : IDL.Func([IDL.Text], [Result_3], ['query']),
-    'getCollectionsByQuery' : IDL.Func([IDL.Text], [Result_2], ['query']),
+    'getAllCollections' : IDL.Func([], [Result_3], ['query']),
+    'getCard' : IDL.Func([CardArgs], [Result_5], ['query']),
+    'getCardCollection' : IDL.Func([IDL.Text], [Result_4], ['query']),
+    'getCollectionsByQuery' : IDL.Func([IDL.Text], [Result_3], ['query']),
+    'http_request' : IDL.Func([Request], [Response], ['query']),
+    'http_request_streaming_callback' : IDL.Func(
+        [StreamingCallbackToken],
+        [StreamingCallbackResponse],
+        ['query'],
+      ),
+    'manageAuth' : IDL.Func([AuthArgs], [Result_2], []),
+    'staticStreamingCallback' : IDL.Func(
+        [StreamingCallbackToken],
+        [StreamingCallbackResponse],
+        ['query'],
+      ),
     'testQueryA' : IDL.Func([CardCollectionArgs], [], []),
     'testQueryB' : IDL.Func([IDL.Vec(CardArgs)], [], []),
     'updateCard' : IDL.Func([CardArgs], [Result_1], []),
@@ -177,9 +285,15 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
   });
-  return anon_class_13_1;
+  return anon_class_18_1;
 };
 export const init = ({ IDL }) => {
-  const InitOptions = IDL.Record({ 'admins' : IDL.Vec(IDL.Principal) });
-  return [InitOptions];
+  const InitArgs = IDL.Record({
+    'allowedUsers' : IDL.Opt(IDL.Vec(IDL.Principal)),
+    'auth' : IDL.Opt(IDL.Vec(IDL.Principal)),
+    'admins' : IDL.Opt(IDL.Vec(IDL.Principal)),
+    'environment' : IDL.Text,
+    'gameServers' : IDL.Opt(IDL.Vec(IDL.Principal)),
+  });
+  return [InitArgs];
 };

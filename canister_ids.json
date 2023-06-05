@@ -1,14 +1,17 @@
 {
   "e_admin_frontend": {
-    "ic": "aglz6-tiaaa-aaaan-qagea-cai",
+    "ic": "quwfl-hiaaa-aaaan-qb7kq-cai",
+    "staging": "aglz6-tiaaa-aaaan-qagea-cai",
     "local": "rkp4c-7iaaa-aaaaa-aaaca-cai"
   },
   "e_asset_manager": {
-    "ic": "bme3e-ryaaa-aaaan-qagda-cai",
-    "local": "rno2w-sqaaa-aaaaa-aaacq-cai"
+    "ic": "qgqss-lyaaa-aaaan-qb7jq-cai",
+    "staging": "bme3e-ryaaa-aaaan-qagda-cai",
+    "local": "wzp7w-lyaaa-aaaaa-aaara-cai"
   },
   "e_tournament_manager": {
-    "ic": "4psib-waaaa-aaaan-qa45q-cai",
+    "ic": "qtxd7-kqaaa-aaaan-qb7ka-cai",
+    "staging": "4psib-waaaa-aaaan-qa45q-cai",
     "local": "rdmx6-jaaaa-aaaaa-aaadq-cai"
   }
 }

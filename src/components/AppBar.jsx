@@ -40,8 +40,8 @@ export default function EAppBar(props) {
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                 Elementum Admin
             </Typography>
-            <Button color="inherit" target="_blank" href="https://aijuw-iyaaa-aaaan-qagfa-cai.ic0.app/">BR Staging</Button>
-            <Button color="inherit" target="_blank" href="https://oisnv-xiaaa-aaaan-qaumq-cai.ic0.app/">BR Game</Button>
+            <Button color="inherit" target="_blank" href="https://aijuw-iyaaa-aaaan-qagfa-cai.icp0.io/">BR Staging</Button>
+            <Button color="inherit" target="_blank" href="https://oisnv-xiaaa-aaaan-qaumq-cai.icp0.io/">BR Game</Button>
             </Toolbar>
         </AppBar>
         </Box>
