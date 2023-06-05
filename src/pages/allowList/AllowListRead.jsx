@@ -4,7 +4,7 @@ import { Grid, Box, Button, Typography, CircularProgress, Container, Backdrop, T
 import { useNavigate } from "react-router-dom";
 import { DataGrid } from '@mui/x-data-grid';
 import canisters from '../../../canister_ids.json';
-import { idlFactory as bRServiceIdl } from '../../IDLs/e_br_service/e_br_service.did.js';
+import { idlFactory as bRServiceIdl } from '../../IDLs/e-br-service/e_br_service.did.js';
 import { Principal } from '@dfinity/principal';
 
 

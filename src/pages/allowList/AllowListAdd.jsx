@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Grid, TextField, Box, Button, Typography, CircularProgress, Container, Backdrop, Tooltip } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import canisters from '../../../canister_ids.json';
-import { idlFactory as bRServiceIdl } from '../../IDLs/e_br_service/e_br_service.did.js';
+import { idlFactory as bRServiceIdl } from '../../IDLs/e-br-service/e_br_service.did.js';
 import { Principal } from '@dfinity/principal';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
