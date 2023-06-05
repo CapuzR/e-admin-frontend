@@ -24,7 +24,8 @@ export default function EList(props) {
         >
         <List>
             {[{title: 'NFT Collections', url: '/collections', active: true}, 
-            {title: 'Tournaments', url: '/tournaments', active: true}]
+            {title: 'Tournaments', url: '/tournaments', active: true},
+            {title: 'Allow List', url: '/allow-list', active: true}]
             .map((object, index) => {
                     if(object.active){
                         return (

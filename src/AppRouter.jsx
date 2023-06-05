@@ -15,6 +15,8 @@ import PromoAssets from "./pages/PromoAssets.jsx";
 
 import Tournaments from "./pages/Tournaments.jsx";
 import TournamentForm from "./pages/TournamentForm.jsx";
+import AllowListRead from "./pages/allowList/AllowListRead";
+import AllowListAdd from "./pages/allowList/AllowListAdd";
 
 
 export const AppRouter = ({ isMobile }) => {
@@ -37,6 +39,11 @@ export const AppRouter = ({ isMobile }) => {
 
         {/* Random Assets */}
         <Route path="/assets" element={<><AppBar location="PromoAssets" /><PromoAssets isMobile={isMobile} /></>} />
+      
+        {/* AllowList Manager */}
+        <Route path="/allow-list" element={<><AppBar location="Allow List"></AppBar><AllowListRead/></>}></Route>
+        <Route path="/allow-list/add" element={<><AppBar location="Add principal"></AppBar><AllowListAdd/></>}></Route>
+      
       </Routes>
     </Router>
   );

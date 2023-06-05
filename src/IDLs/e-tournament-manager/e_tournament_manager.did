@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 type anon_class_30_1 = 
  service {
    addTournament: (TournamentArgs) -> (Result_6);
@@ -8,6 +9,24 @@ type anon_class_30_1 =
    getTournament: (text) -> (Result_2) query;
    manageAuth: (AuthArgs) -> (Result_1);
    updateTournament: (TournamentArgs, text) -> (Result);
+=======
+type anon_class_35_1 = 
+ service {
+   addTournament: (TournamentArgs) -> (Result_10);
+   createProposal: (text, text) -> (Result_1);
+   deleteProposal: (text) -> (Result);
+   deleteTournament: (text) -> (Result_2);
+   endTournament: (text) -> (Result_9);
+   getAllProposals: () -> (Result_8);
+   getAllTournaments: () -> (Result_7) query;
+   getLeaderboard: (text) -> (Result_6);
+   getProposal: (text) -> (Result_5);
+   getTournament: (text) -> (Result_4) query;
+   manageAuth: (AuthArgs) -> (Result_3);
+   updateTournament: (TournamentArgs, text) -> (Result_2);
+   updatedProposal: (text, text, text) -> (Result_1);
+   voteUp: (text) -> (Result);
+>>>>>>> d3eae7ff2fb36e796bc7b4fc8a3128877655e46c
  };
 type TournamentSuccess = 
  record {
@@ -54,6 +73,12 @@ type TournamentArgs =
    startDate: text;
    status: Status;
  };
+type Status__1 = 
+ variant {
+   Accepted;
+   Denied;
+   OnHold;
+ };
 type Status = 
  variant {
    Active;
@@ -61,6 +86,7 @@ type Status =
    Finished;
    OnHold;
  };
+<<<<<<< HEAD
 type Result_6 = 
  variant {
    err: TournamentError;
@@ -72,11 +98,28 @@ type Result_5 =
    ok;
  };
 type Result_4 = 
+=======
+type Result_9 = 
+ variant {
+   err: Error__1;
+   ok;
+ };
+type Result_8 = 
+ variant {
+   err: ProposalError;
+   ok: vec ProposalSuccess;
+ };
+type Result_7 = 
+>>>>>>> d3eae7ff2fb36e796bc7b4fc8a3128877655e46c
  variant {
    err: TournamentError;
    ok: vec TournamentSuccess;
  };
+<<<<<<< HEAD
 type Result_3 = 
+=======
+type Result_6 = 
+>>>>>>> d3eae7ff2fb36e796bc7b4fc8a3128877655e46c
  variant {
    err: TournamentError;
    ok: record {
@@ -84,21 +127,56 @@ type Result_3 =
          rewards: text;
        };
  };
+<<<<<<< HEAD
 type Result_2 = 
+=======
+type Result_5 = 
+ variant {
+   err: ProposalError;
+   ok: Proposal;
+ };
+type Result_4 = 
+>>>>>>> d3eae7ff2fb36e796bc7b4fc8a3128877655e46c
  variant {
    err: TournamentError;
    ok: TournamentSuccess;
  };
+<<<<<<< HEAD
 type Result_1 = 
+=======
+type Result_3 = 
+>>>>>>> d3eae7ff2fb36e796bc7b4fc8a3128877655e46c
  variant {
    err: Error;
    ok: opt vec principal;
  };
+<<<<<<< HEAD
 type Result = 
+=======
+type Result_2 = 
+>>>>>>> d3eae7ff2fb36e796bc7b4fc8a3128877655e46c
  variant {
    err: TournamentError;
    ok;
  };
+<<<<<<< HEAD
+=======
+type Result_10 = 
+ variant {
+   err: TournamentError;
+   ok: text;
+ };
+type Result_1 = 
+ variant {
+   err: ProposalError;
+   ok: text;
+ };
+type Result = 
+ variant {
+   err: ProposalError;
+   ok;
+ };
+>>>>>>> d3eae7ff2fb36e796bc7b4fc8a3128877655e46c
 type RequestArgs = 
  variant {
    Add: vec principal;
@@ -108,6 +186,38 @@ type RequestArgs =
    Remove: principal;
    RemoveAll;
  };
+<<<<<<< HEAD
+=======
+type ProposalSuccess = 
+ record {
+   description: text;
+   id: text;
+   isHolder: bool;
+   owner: opt principal;
+   status: Status__1;
+   title: text;
+   vote: nat;
+ };
+type ProposalError = 
+ variant {
+   AlreadyExistsProposal;
+   NoneProposals;
+   NotAccepted;
+   NotFoundProposal;
+   NotHolder;
+   NotOwner;
+   Unknow: text;
+ };
+type Proposal = 
+ record {
+   description: text;
+   isHolder: bool;
+   owner: opt principal;
+   status: Status__1;
+   title: text;
+   vote: nat;
+ };
+>>>>>>> d3eae7ff2fb36e796bc7b4fc8a3128877655e46c
 type PlayerStatsSuccess = 
  record {
    earned: nat;
@@ -156,4 +266,8 @@ type AuthArgs =
    Auth: RequestArgs;
    GameServers: RequestArgs;
  };
+<<<<<<< HEAD
 service : (InitArgs) -> anon_class_30_1
+=======
+service : (InitArgs) -> anon_class_35_1
+>>>>>>> d3eae7ff2fb36e796bc7b4fc8a3128877655e46c

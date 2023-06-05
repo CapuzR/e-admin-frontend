@@ -23,7 +23,6 @@ import { idlFactory as eAIdlFactory } from '../IDLs/e-asset-manager/e_asset_mana
 import  { idlFactory as eTIdlFactory }  from '../IDLs/e-tournament-manager/e_tournament_manager.did.js';
 import canisters from '../../canister_ids.json';
 import { boostsSetAtArr, boostsSetPerArr, statusArr } from '../selects.js';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -76,7 +75,43 @@ export default function TournamentForm() {
   const [ connected, setConnected ] = useState(false);
   const [ loading, setLoading ] = useState(false);
   const { id } = useParams();
+  const [ optionSelect , setOptionSelect ] = useState(false);
+  const [general, setGeneral] = useState('');
+  const [ partner, setPartner ] = useState('');
+  const [ check, setCheck ] = useState(false);
+  const [ winners, setWinners ] = useState([
+    {
+      position: 1, 
+      reward: {
+      lenght: [],
+      text: '',
+      thumbUrl: []
+    }
+  },
+    {
+      position: 2,
+      reward: {
+      lenght: [],
+      text: '',
+      thumbUrl: []
+    }
+  },
+    {
+      position: 3,
+       reward: {
+      lenght: [],
+      text: '',
+      thumbUrl: []
+    }
+  },
+  ])
 
+  const result = {
+    partner: partner,
+    general: general,
+    winners: winners
+  };
+ 
   const verifyConnectionAndAgent = async () => {
     const connected = await window.ic.plug.isConnected();
     if (!connected) window.ic.plug.requestConnect({ whitelist, host });
@@ -131,6 +166,7 @@ export default function TournamentForm() {
     };
   };
 
+
   const getTournament = async ()=> {
     try {
       const eTActor = await createActor(eTId, eTIdlFactory);
@@ -159,6 +195,7 @@ export default function TournamentForm() {
       window.alert("Unexpected error. Please try again and report it.");
     };
   };
+
   
   const gameHandleChange = (event) => {
     setGame(event.target.value);
@@ -214,6 +251,7 @@ export default function TournamentForm() {
     setBoostsSetAt(event.target.value);
   };
 
+
   const boostsSetPerHandleChange = (event) => {
     setBoostsSetPer(event.target.value);
   };
@@ -250,6 +288,9 @@ export default function TournamentForm() {
       // endDate: endDate.toString(),
       startDate: moment(uStartDate).format("x"),
       endDate: moment(uEndDate).format("x"),
+      reward: JSON.stringify(result),
+      startDate: startDate.toString(),
+      endDate: endDate.toString(),
       internalCollections,
       externalCollections,
       boostsSetAt,
@@ -312,6 +353,43 @@ export default function TournamentForm() {
     };
   };
 
+  const getRewardToConvert = async (option) => {
+      switch (option) {
+        case "collection":
+          setOptionSelect(true);
+
+          break;
+
+          case "token":
+          setOptionSelect(false)
+          break;
+
+          case "NotFungibleToken":
+            setOptionSelect(true);
+          
+          break;
+
+          case "collection+token":
+            setOptionSelect(true);
+          
+          break;
+
+          case "token+NotFungibleToken":
+            setOptionSelect(true);
+          
+          break;
+      
+      }
+  };
+
+  const rewards = [
+    { value: "collection", text: "Collections" },
+    { value: "token ", text: "Token" },
+    { value: "NotFungibleToken", text: "NFT" },
+    { value: "collection+token", text: "Collection + token" },
+    { value: "token+NotFungibleToken", text: "Token + NFT" },
+  ];
+
   return (
     <div>
       {
@@ -325,7 +403,7 @@ export default function TournamentForm() {
         :
         <Grid container spacing={2} justifyContent="center">
           <Grid item xs={8} style={{marginTop: "10vh"}}>
-            <Paper elevation={3} style={{ width: '100%', marginTop: 10, height: 525, padding: 30 }}>
+            <Paper elevation={3} style={{ width: '100%', marginTop: 10, height: '100%', padding: 30 }}>
               <Grid container spacing={2} style={{ width: '100%', height: "100%", position: "relative" }}>
                 <Grid item container xs={12} spacing={3} style={{ padding: 50}}>
                   <Grid item xs={3}>
@@ -499,11 +577,118 @@ export default function TournamentForm() {
                     </FormControl>
                   </Grid>
                   <Grid item xs={3}>
-                    <TextField label="Points" variant="outlined" value={points} inputProps={{type : 'number'}} onChange={(e)=>{setPoints(parseInt(e.target.value))}} />
+                    <TextField label="Points" variant="outlined" value={points} inputProps={{type : 'number', min:"0", max:"100"}} onChange={(e)=>{setPoints(parseInt(e.target.value))}} />
                   </Grid>
-                  <Grid item xs={6}>
-                    <TextField id="input-with-sx" label="Reward" variant="outlined" value={reward} onChange={(e)=>{setReward(e.target.value)}} />
-                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField id="input-with-sx" select label="Reward" variant="outlined" defaultValue='Collections'
+                    onChange={(e)=>{
+                      getRewardToConvert(e.target.value)
+                      }} 
+                      >
+                        {
+                          rewards.map((option, key) => (
+                            <MenuItem key={key} value={option.value}>
+                              {option.text}
+                            </MenuItem>
+                          ))
+                        }
+                      </TextField>
+                      </Grid>
+                      <Grid item xs={3}>
+                      {
+                        optionSelect ? 
+                        <>
+                        <InputLabel>Tiene partner?</InputLabel>
+                        <Checkbox onClick={(e) => {
+                          e.target.checked ? 
+                          setCheck(e.target.checked)
+                          :
+                          setCheck(e.target.checked);
+                        }}></Checkbox>
+                        </>
+                        :
+                      ''
+                      }
+                      </Grid>
+                      <Grid container xs={6}>
+                      {
+                        check ? 
+                        <Grid item xs={6}>
+                        <TextField id="input-with-sx" label="Partner" variant="outlined" value={partner}  
+                        onChange={
+                        (e) => {
+                          setPartner(e.target.value);
+                        }}/>
+                        </Grid>
+                        :
+                        ''
+                      }
+                      <Grid item xs={6}>
+                          {
+                            
+                            optionSelect ? 
+                            <TextField id="input-with-sx" label="General" variant="outlined" value={general}  
+                            onChange={
+                            (e) => {
+                              setGeneral(e.target.value);
+                            }}/>
+                            :
+                            ''
+                           
+                          }
+                      </Grid>
+
+                      <Grid container xs={12} md={12}>
+                        {
+                          optionSelect ? 
+
+                          winners.map((winner, key) => {
+                            return (
+                              <Grid container xs={6} md={12}>
+                                <Grid item xs={6}>
+                              <TextField key={key} label={`Reward ${winner.position}`} onChange={
+                                (e) => {
+                                  winner.reward.text = e.target.value;
+                                }
+                              }>
+                              </TextField>
+                              </Grid>
+                              <Grid item xs={6}>
+                        {
+                          optionSelect ? 
+                          <TextField id="input-with-sx" label="Amount" variant="outlined"  inputProps={{type : 'number', min:"0", max:"100"}} onChange={(e) => {
+                          winner.reward.lenght.push(e.target.value);
+                          }} ></TextField>
+                          :
+                          ''
+                        }
+                      </Grid>
+                              {
+                          optionSelect ? 
+                          winner.reward.lenght.map((value, key) => {
+                          return (
+                            <Grid key={key} item xs={6}>
+                                    <TextField label={`ThumbUrl ${key}`} onChange={
+                                      (e) => {
+                                        winner.reward.thumbUrl.push(e.target.value)
+                                      }
+                                    } variant="outlined"  />
+                            </Grid>
+                                )
+                              })
+                              :
+                              ''
+                            } 
+                              </Grid>
+                            )
+                          })
+
+                          :
+
+                          ''
+                        }
+                      </Grid>
+                      </Grid>
                   <Grid item xs={3}>
                   <FormControl fullWidth>
                       <InputLabel id="status-simple-select-label">Status</InputLabel>
@@ -545,9 +730,9 @@ export default function TournamentForm() {
               </Grid>
             </Paper>
           </Grid>
-          <Grid item xs={12} style={{ position: "absolute", bottom: 10}}>
+          <Grid item xs={12} >
             <Grid item xs={12} textAlign="center">
-              <Typography>
+              <Typography >
                 Developed by: Weavers Labs
               </Typography>
             </Grid>
